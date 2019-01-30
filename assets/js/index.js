@@ -78,7 +78,7 @@ $(function() {
     });
 
     $('#inputPeopleSlider').slider({
-        max: 9,
+        max: 25,
         min: 3,
         value: 4,
         create: update_dialog_title_type,
@@ -318,6 +318,7 @@ $(function() {
         className: 'gcal-holiday',
         editable: true,
         eventDataTransform: function(rawEventData) { // drop url from google cal
+            console.log(rawEventData)
             return {
                 id: rawEventData.id,
                 title: '  假日 ' + rawEventData.title, // prepend two spaces to be sort first.
@@ -656,13 +657,9 @@ $(function() {
         return preset_holidays;
     }
 
-    function random_pattern(people, ordinary_count, friday_count, holiday_count) {
+    function random_pattern(people, ordinary_count, holiday_count) {
         var ordinary_duties = [];
-        var friday_duties = [];
         var holiday_duties = [];
-        while (friday_duties.length < friday_count) {
-            friday_duties.push(randomIntFromInterval(1, people));
-        }
         while (holiday_duties.length < holiday_count) {
             holiday_duties.push(randomIntFromInterval(1, people));
         }
@@ -670,12 +667,11 @@ $(function() {
         var patterns = [];
         for (i = 1; i <= people; i++) {
             var o_count;
-            var f_count = friday_duties.multiIndexOf(i).length;
             var h_count = holiday_duties.multiIndexOf(i).length;
 
             if (ENABLE_PATTERN_CONDITIONING) {
-                var total_points = 2 * holiday_count + 1 * friday_count + 1 * ordinary_count;
-                var points = 2 * h_count + 1 * f_count + 1 * o_count;
+                var total_points = 2 * holiday_count + 1 * ordinary_count;
+                var points = 2 * h_count + 1 * o_count;
                 var ratio = total_points / people;
                 var threshold = {};
                 if (total_points / people < 6) { // in extreme condition (too many people), use loose threshold
@@ -692,13 +688,13 @@ $(function() {
                 o_count = parseInt(ordinary_count / people);
             }
 
-            patterns.push([o_count, f_count, h_count]);
+            patterns.push([o_count, h_count]);
         }
 
         var residual_ordinary_count = ordinary_count % people;
         if (residual_ordinary_count != 0) {
             patterns = patterns.sort(function(a, b) {
-                return (a[2] * 2 + a[1] + a[0]) - (b[2] * 2 + b[1] + b[0]);
+                return (a[1] * 2 + a[0]) - (b[1] * 2 + b[0]);
             });
             for (i = 0; i < residual_ordinary_count; i++) {
                 patterns[i][0]++;
@@ -713,15 +709,12 @@ $(function() {
         var preset_holidays = get_preset_holidays();
 
         var holiday_count = 0;
-        var friday_count = 0;
         var ordinary_count = 0;
         var the_day = start_date;
         while (the_day.format() != end_date.format()) {
             var the_day_str = the_day.format("YYYY-MM-DD");
             if (is_weekend(the_day_str) || is_holiday(preset_holidays, the_day_str)) {
                 holiday_count++;
-            } else if (is_friday(preset_holidays, the_day_str)) {
-                friday_count++;
             } else {
                 ordinary_count++;
             }
@@ -730,7 +723,7 @@ $(function() {
 
         var c = 0;
         var patterns;
-        while (!(patterns = random_pattern(people, ordinary_count, friday_count, holiday_count))) {
+        while (!(patterns = random_pattern(people, ordinary_count, holiday_count))) {
             c++;
             if (!(c % 100000)) {
                 console.log("run time: " + c + ". Still running.");
@@ -772,20 +765,16 @@ $(function() {
                 var person_id = '#person_' + person;
                 if ($(person_id).length == 1) {
                     var o_span = $(person_id + " .ordinary_count .current_status");
-                    var f_span = $(person_id + " .friday_count .current_status");
                     var h_span = $(person_id + " .holiday_count .current_status");
                     var o_count = groups[person].ordinary_count;
-                    var f_count = groups[person].friday_count;
                     var h_count = groups[person].holiday_count;
 
                     o_span.html("(" + o_count + ")");
-                    f_span.html("(" + f_count + ")");
                     h_span.html("(" + h_count + ")");
 
                     // show background if not fit pattern
                     o_span.toggleClass('bg-danger', (o_count != patterns[person - 1][0]), 800);
-                    f_span.toggleClass('bg-danger', (f_count != patterns[person - 1][1]), 800);
-                    h_span.toggleClass('bg-danger', (h_count != patterns[person - 1][2]), 800);
+                    h_span.toggleClass('bg-danger', (h_count != patterns[person - 1][1]), 800);
                 } else {
                     console.log("no such person: " + person);
                 }
@@ -796,19 +785,17 @@ $(function() {
     function update_duty_patterns(patterns) {
         if (patterns !== undefined) {
             $('#suggested_pattern table').remove();
-            var pattern_html = '<table class="table table-striped"><tr><th>No.</th><th>平</th><th>五</th><th>假</th><th>P</th></tr>';
+            var pattern_html = '<table class="table table-striped"><tr><th>No.</th><th>平</th><th>假</th><th>P</th></tr>';
             var o_count = 0,
-                f_count = 0,
                 h_count = 0;
             $.each(patterns, function(index, pattern) {
-                var point = parseInt(pattern[0]) + parseInt(pattern[1]) + parseInt(pattern[2]) * 2;
-                pattern_html += '<tr id="person_' + (index + 1) + '"><td>' + (index + 1) + '</td><td class="ordinary_count">' + pattern[0] + ' <span class="current_status"></span></td><td class="friday_count">' + pattern[1] + ' <span class="current_status"></span></td><td class="holiday_count">' + pattern[2] + ' <span class="current_status"></span></td><td>' + point + '</td></tr>';
+                var point = parseInt(pattern[0]) + parseInt(pattern[1]) * 2;
+                pattern_html += '<tr id="person_' + (index + 1) + '"><td>' + (index + 1) + '</td><td class="ordinary_count">' + pattern[0] + ' <span class="current_status"></span></td><td class="holiday_count">' + pattern[1] + ' <span class="current_status"></span></td><td>' + point + '</td></tr>';
                 o_count += pattern[0];
-                f_count += pattern[1];
-                h_count += pattern[2];
+                h_count += pattern[1];
             });
-            var t_count = o_count + f_count + h_count;
-            pattern_html += '<tr><th>共</th><th>' + o_count + '</th><th>' + f_count + '</th><th>' + h_count + '</th><th>' + t_count + '</th></tr></table>';
+            var t_count = o_count + h_count;
+            pattern_html += '<tr><th>共</th><th>' + o_count + '</th><th>' + h_count + '</th><th>' + t_count + '</th></tr></table>';
             $('#suggested_pattern').append(pattern_html);
         }
     }
@@ -843,18 +830,16 @@ $(function() {
         }
 
         var o_count = 0,
-            f_count = 0,
             h_count = 0;
-        var table_html = '<table id="edit_patterns_table" class="table"><tr><th>No.</th><th>平</th><th>五</th><th>假</th><th>P</th></tr>';
+        var table_html = '<table id="edit_patterns_table" class="table"><tr><th>No.</th><th>平</th><th>假</th><th>P</th></tr>';
         $.each(patterns, function(i, p) {
             o_count += p[0];
-            f_count += p[1];
-            h_count += p[2];
-            var pt = p[0] + p[1] + p[2] * 2;
-            table_html += '<tr><td>' + (i + 1) + '</td><td class="duty_data" contentEditable>' + p[0] + '</td><td class="duty_data" contentEditable>' + p[1] + '</td><td class="duty_data" contentEditable>' + p[2] + '</td><td class="total_points">' + pt + '</td></tr>';
+            h_count += p[1];
+            var pt = p[0] + p[1] * 2;
+            table_html += '<tr><td>' + (i + 1) + '</td><td class="duty_data" contentEditable>' + p[0] + '</td><td class="duty_data" contentEditable>' + p[1] + '</td><td class="total_points">' + pt + '</td></tr>';
         });
-        var t_count = o_count + f_count + h_count;
-        table_html += '<tr><th>共</th><th>' + o_count + ' <span class="o_count bg-danger"></span></th><th>' + f_count + ' <span class="f_count bg-danger"></span></th><th>' + h_count + ' <span class="h_count bg-danger"></span></th><th>' + t_count + '</th></tr></table>';
+        var t_count = o_count + h_count;
+        table_html += '<tr><th>共</th><th>' + o_count + '</th><th>' + h_count + ' <span class="h_count bg-danger"></span></th><th>' + t_count + '</th></tr></table>';
 
         function getPatternTableData(table) {
             var data = [];
@@ -879,14 +864,12 @@ $(function() {
                     // check if pattern matches
                     var table_data = getPatternTableData($('#edit_patterns_table'));
                     var tb_o_count = 0,
-                        tb_f_count = 0,
                         tb_h_count = 0;
                     $.each(table_data, function(i, p) {
                         tb_o_count += parseInt(p[0]);
-                        tb_f_count += parseInt(p[1]);
-                        tb_h_count += parseInt(p[2]);
+                        tb_h_count += parseInt(p[1]);
                     });
-                    if (tb_o_count != o_count || tb_f_count != f_count || tb_h_count != h_count) {
+                    if (tb_o_count != o_count || tb_h_count != h_count) {
                         WarningDialog('總班數錯誤，請再檢查');
                         console.log(table_data);
                         return;
@@ -908,19 +891,16 @@ $(function() {
                         var table_data = getPatternTableData($('#edit_patterns_table'));
                         // update point
                         var tb_o_count = 0,
-                            tb_f_count = 0,
                             tb_h_count = 0;
                         $.each(table_data, function(i, p) {
                             tb_o_count += parseInt(p[0]);
-                            tb_f_count += parseInt(p[1]);
-                            tb_h_count += parseInt(p[2]);
-                            var points = parseInt(p[1]) + parseInt(p[2]) * 2;
+                            tb_h_count += parseInt(p[1]);
+                            var points = parseInt(p[1]) * 2;
                             $('#edit_patterns_table td.total_points').eq(i).html(points);
                         });
 
                         // update total if not match
                         $('#edit_patterns_table th .o_count').html(tb_o_count != o_count ? "(" + tb_o_count + ")" : "");
-                        $('#edit_patterns_table th .f_count').html(tb_f_count != f_count ? "(" + tb_f_count + ")" : "");
                         $('#edit_patterns_table th .h_count').html(tb_h_count != h_count ? "(" + tb_h_count + ")" : "");
                     }
                 });
@@ -953,13 +933,9 @@ $(function() {
                     var moment_d = moment(d, "YYYY-MM-DD");
                     var week_no = moment_d.week();
                     var date_html = '<span class="';
-                    // colorize if friday or holiday
                     if (is_holiday(preset_holidays, d) || is_weekend(d)) {
                         date_html += 'bg-danger';
                         week_hours[week_no] += 24;
-                    } else if (is_friday(preset_holidays, d)) {
-                        date_html += 'bg-success';
-                        week_hours[week_no] += 16;
                     } else {
                         week_hours[week_no] += 16;
                     }
@@ -1012,8 +988,7 @@ $(function() {
             }
             var dates = groups[person].dates;
             var counted_pattern = count_duty_pattern(dates, presets.holidays);
-            // compare only friday and holiday now
-            if (patterns[i][1] != counted_pattern[1] || patterns[i][2] != counted_pattern[2]) {
+            if (patterns[i][1] != counted_pattern[1]) {
                 console.log("person: " + person + ", pattern not fit: " + counted_pattern.join(", "));
                 return false;
             }
@@ -1091,7 +1066,6 @@ $(function() {
     }
 
     var random_duty_worker;
-
     function do_random_duty() {
         var patterns = $('#suggested_pattern').data("patterns");
         var use_qod_limit = $('#use_qod_limit').is(':checked');
@@ -1213,7 +1187,6 @@ $(function() {
         // VGHKS vs General mode
         var vghks_mode = $('#vghks_mode_switch').bootstrapSwitch('state');
         if (vghks_mode) {
-            // check if friday, weekend, holiday duties are set and fit pattern.
             if (!is_preset_duties_fit_pattern(presets, patterns)) {
                 WarningDialog('已排班表不符合樣式，請調整');
                 return;

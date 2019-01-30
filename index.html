@@ -6,16 +6,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>VGHKS Random Duty Generator</title>
-    <script src="vendor/js/pace.min.js"></script>
-    <link href="vendor/css/pace-theme-loading-bar.css" rel="stylesheet" />
-    <link rel="stylesheet" href="vendor/css/bootstrap.min.css">
-    <link rel="stylesheet" href="vendor/css/bootstrap-switch.min.css">
-    <link rel="stylesheet" href="vendor/css/bootstrap-dialog.min.css">
-    <link rel="stylesheet" href="vendor/css/themes/redmond/jquery-ui.min.css">
-    <link rel="stylesheet" href="vendor/css/fullcalendar.min.css">
-    <link rel="stylesheet" href="vendor/css/fullcalendar.print.css" media='print'>
-    <link rel="stylesheet" href="vendor/css/jquery-ui-slider-pips.css">
-    <link rel="stylesheet" href="vendor/css/font-awesome.min.css">
+    <script src="assets/js/pace.min.js"></script>
+    <link href="assets/css/pace-theme-loading-bar.css" rel="stylesheet" />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-pdapHxIh7EYuwy6K7iE41uXVxGCXY0sAjBzaElYGJUrzwodck3Lx6IE2lA0rFREo"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.35.4/css/bootstrap-dialog.min.css">
+    <link rel="stylesheet" href="assets/css/jquery-ui.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.0/fullcalendar.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.0/fullcalendar.print.min.css"
+        media='print'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jQuery-ui-Slider-Pips/1.11.4/jquery-ui-slider-pips.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+        integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
     <link rel="stylesheet" type="text/css" href="assets/css/dashboard.css">
     <link rel="stylesheet" type="text/css" href="assets/css/calendar.css">
     <link rel="stylesheet" type="text/css" href="assets/css/index.css">
@@ -27,11 +31,12 @@
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <!--[if gte IE 9]>
-        <script type="text/javascript" src="vendor/js/jquery.min.js"></script>
+        <script type="text/javascript" src="assets/js/jquery.min.js"></script>
     <![endif]-->
     <!--[if !IE]>
         <!-->
-    <script type="text/javascript" src="vendor/js/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+        crossorigin="anonymous"></script>
     <!-->
     <![endif]-->
 </head>
@@ -314,22 +319,25 @@
             </div>
         </div>
     </div>
-    <script src="vendor/js/js.cookie.js"></script>
-    <script src="vendor/js/md5.js"></script>
+    <script src="assets/js/crypto.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
     <!-- bootstrap should be load earlier than jquery-ui, or the dialog will be wrong. -->
-    <script src="vendor/js/bootstrap.min.js"></script>
-    <script src="vendor/js/jquery-ui.min.js"></script>
-    <script src="vendor/js/jquery-ui-slider-pips.min.js"></script>
-    <script src="vendor/js/moment.min.js"></script>
-    <script src="vendor/js/bootstrap-switch.min.js"></script>
-    <script src="vendor/js/bootstrap-dialog.min.js"></script>
-    <script src="vendor/js/jquery.blockUI.js"></script>
-    <script src="vendor/js/fullcalendar.min.js"></script>
-    <script src="vendor/js/gcal.js"></script>
-    <script src="vendor/js/excellentexport.min.js"></script>
-    <script src="vendor/js/jquery.contenteditable.js"></script>
-    <script src="vendor/js/marked.min.js"></script>
-    <script src="vendor/js/html2canvas.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-ui-Slider-Pips/1.11.4/jquery-ui-slider-pips.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.35.4/js/bootstrap-dialog.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.2.0/fullcalendar.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.2.0/gcal.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/excellentexport@3.2.0/dist/excellentexport.min.js"></script>
+    <script src="/assets/js/jquery.contenteditable.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.6.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+
+
     <script src="assets/js/private_functions.js"></script>
     <script src="assets/js/lib_duties.js"></script>
     <script src="assets/js/lib_holidays.js"></script>

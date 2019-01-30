@@ -38,14 +38,11 @@ function get_preset_non_duties_by_date(preset_non_duties, date_str) {
 
 function count_duty_pattern(dates, preset_holidays) {
     var o_count = 0,
-        f_count = 0,
         h_count = 0;
     if (is_worker_env()) { // cannot use jquery in web workers
         dates.forEach(function(date) {
             if (is_weekend(date) || is_holiday(preset_holidays, date)) {
                 h_count++;
-            } else if (is_friday(preset_holidays, date)) {
-                f_count++;
             } else {
                 o_count++;
             }
@@ -54,24 +51,20 @@ function count_duty_pattern(dates, preset_holidays) {
         $.each(dates, function(i, date) {
             if (is_weekend(date) || is_holiday(preset_holidays, date)) {
                 h_count++;
-            } else if (is_friday(preset_holidays, date)) {
-                f_count++;
             } else {
                 o_count++;
             }
         });
     }
     //console.log("dates: " + dates);
-    //console.log("pattern: " + [o_count, f_count, h_count].toString());
-    return [o_count, f_count, h_count];
+    return [o_count, h_count];
 }
 
 function calculate_group_duties_status(groups, preset_holidays) {
     for (var person in groups) {
         var duty_pattern = count_duty_pattern(groups[person].dates, preset_holidays);
         groups[person].ordinary_count = duty_pattern[0];
-        groups[person].friday_count = duty_pattern[1];
-        groups[person].holiday_count = duty_pattern[2];
+        groups[person].holiday_count = duty_pattern[1];
     }
     return groups;
 }

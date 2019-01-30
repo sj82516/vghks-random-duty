@@ -1,5 +1,5 @@
 importScripts(
-    '../../vendor/js/moment.min.js',
+    '../../assets/js/moment.min.js',
     'private_functions.js',
     'lib_duties.js',
     'lib_holidays.js',
@@ -28,14 +28,12 @@ onmessage = function(oEvent) {
 function generate_non_preset_duty_match_patterns(total_days, since_date_str, presets, patterns) {
     var non_preset_duties = {
         ordinary: [],
-        friday: [],
         holiday: []
     };
 
     //console.log(preset_duties.toString());
 
     var tmp_duties_ordinary = [],
-        tmp_duties_friday = [],
         tmp_duties_holiday = [];
     var groups = calculate_group_duties_status(calculate_group_duties(presets.duties, false), presets.holidays);
     patterns.forEach(function(pattern, index) {
@@ -45,11 +43,7 @@ function generate_non_preset_duty_match_patterns(total_days, since_date_str, pre
         for (var i = 0; i < residual_count; i++) {
             tmp_duties_ordinary.push(person_no);
         }
-        residual_count = (groups[person_no] !== undefined && groups[person_no].friday_count !== undefined ? pattern[1] - groups[person_no].friday_count : pattern[1]);
-        for (var i = 0; i < residual_count; i++) {
-            tmp_duties_friday.push(person_no);
-        }
-        residual_count = (groups[person_no] !== undefined && groups[person_no].holiday_count !== undefined ? pattern[2] - groups[person_no].holiday_count : pattern[2]);
+        residual_count = (groups[person_no] !== undefined && groups[person_no].holiday_count !== undefined ? pattern[1] - groups[person_no].holiday_count : pattern[1]);
         for (var i = 0; i < residual_count; i++) {
             tmp_duties_holiday.push(person_no);
         }
@@ -62,9 +56,6 @@ function generate_non_preset_duty_match_patterns(total_days, since_date_str, pre
             if (is_holiday(presets.holidays, the_date) || is_weekend(the_date)) {
                 duty = tmp_duties_holiday.pop();
                 non_preset_duties.holiday.push([the_date, duty]);
-            } else if (is_friday(presets.holidays, the_date)) {
-                duty = tmp_duties_friday.pop();
-                non_preset_duties.friday.push([the_date, duty]);
             } else {
                 duty = tmp_duties_ordinary.pop();
                 non_preset_duties.ordinary.push([the_date, duty]);
@@ -73,7 +64,7 @@ function generate_non_preset_duty_match_patterns(total_days, since_date_str, pre
         since_date.add(1, 'days');
     }
 
-    if (tmp_duties_ordinary.length > 0 || tmp_duties_friday.length > 0 || tmp_duties_holiday.length > 0) {
+    if (tmp_duties_ordinary.length > 0 || tmp_duties_holiday.length > 0) {
         console.log("tmp_duties should not more than zero.");
     }
 
