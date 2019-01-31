@@ -78,7 +78,7 @@ $(function() {
     });
 
     $('#inputPeopleSlider').slider({
-        max: 25,
+        max: 30,
         min: 3,
         value: 4,
         create: update_dialog_title_type,
